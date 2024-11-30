@@ -2,6 +2,39 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type SignUpRespone {
+  id: ID!
+  firstName: String!
+  lastName: String!
+  email: String!
+  dob: String
+  phoneNumber: String
+  accessToken: String!
+}
+
+type LoginResponse {
+  id: ID!
+  email: String!
+  accessToken: String!
+}
+
 type Query {
   getHello: String!
+}
+
+type Mutation {
+  signUp(SignUpInput: SignUpInput!): SignUpRespone!
+  login(LoginInput: LoginInput!): LoginResponse!
+}
+
+input SignUpInput {
+  firstName: String!
+  lastName: String!
+  email: String!
+  password: String!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
 }

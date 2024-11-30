@@ -1,6 +1,7 @@
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, OneToMany, OneToOne } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { UserLoginHistory } from './login.history.entity';
 
 @Entity('User')
 @ObjectType()
@@ -20,6 +21,9 @@ export class User extends BaseEntity {
   @Field()
   email: string;
 
+  @Column({ type: 'varchar' })
+  password: string;
+
   @Column({ type: 'varchar', nullable: true })
   @Field({ nullable: true })
   dob?: string;
@@ -27,4 +31,7 @@ export class User extends BaseEntity {
   @Column({ type: 'varchar', nullable: true })
   @Field({ nullable: true })
   phoneNumber?: string;
+
+  @OneToOne(() => UserLoginHistory, (u) => u.user)
+  loginHistory: UserLoginHistory;
 }

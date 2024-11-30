@@ -6,6 +6,7 @@ import { AuthGuard } from './guards/auth.guard';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { join } from 'path';
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
     }),
     DatabaseModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [
