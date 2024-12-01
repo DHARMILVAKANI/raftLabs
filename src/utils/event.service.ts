@@ -7,7 +7,6 @@ export class EventsService {
 
   initializeServer(server: Server) {
     this.server = server;
-    console.log('WebSocket Gateway Initialized');
   }
 
   handleConnection(client: Socket) {
