@@ -3,18 +3,18 @@ import { BaseEntity } from 'src/database/entities/base.entity';
 import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { User } from 'src/database/entities/user.entity';
 
-ObjectType();
+@ObjectType()
 @Entity('Task')
 export class Task extends BaseEntity {
   @Field(() => ID)
   id: string;
 
   @Column({ type: 'varchar' })
-  @Field()
+  @Field(() => String)
   title: string;
 
   @Column({ type: 'varchar' })
-  @Field()
+  @Field(() => String)
   description: string;
 
   @ManyToOne(() => User, (u) => u.tasks)

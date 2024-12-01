@@ -2,6 +2,12 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type Task {
+  id: ID!
+  title: String!
+  description: String!
+}
+
 type User {
   id: ID!
   firstName: String!
@@ -30,12 +36,16 @@ type LoginResponse {
 type Query {
   getHello: String!
   getProfileData: User!
+  getTasks: [Task!]!
+  getSingleTasks(id: String!): Task!
 }
 
 type Mutation {
   signUp(SignUpInput: SignUpInput!): SignUpRespone!
   login(LoginInput: LoginInput!): LoginResponse!
   updateProfile(updateProfileInput: UpdateProfileInput!): User!
+  createTask(CreateTaskInput: CreateTaskInput!): Task!
+  deleteTask(id: String!): String!
 }
 
 input SignUpInput {
@@ -55,4 +65,9 @@ input UpdateProfileInput {
   lastName: String
   dob: String
   phoneNumber: String
+}
+
+input CreateTaskInput {
+  title: String!
+  description: String!
 }

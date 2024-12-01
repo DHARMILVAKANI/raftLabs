@@ -8,6 +8,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
 import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from 'src/modules/user/user.module';
+import { TaskModule } from 'src/modules/task/task.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { UserModule } from 'src/modules/user/user.module';
     DatabaseModule,
     AuthModule,
     UserModule,
+    TaskModule,
   ],
   controllers: [],
   providers: [
