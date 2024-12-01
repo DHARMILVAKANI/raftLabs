@@ -20,7 +20,6 @@ export class TaskService {
       createdBy: userId,
       user: { id: userId },
     });
-    await this.redisService.delete(`tasks:${userId}`);
     await this.redisService.set(`task:${userId}:${task.id}`, task, 600);
     await this.redisService.delete(`tasks:${userId}`);
     return task;
