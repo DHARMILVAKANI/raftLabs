@@ -5,6 +5,7 @@ import {
   LoginResponse,
   SignUpInput,
   SignUpRespone,
+  VerifyOtpInput,
 } from './dto/signup.dto';
 import { Public } from 'src/decorators/public.decorator';
 
@@ -22,5 +23,10 @@ export class AuthResolver {
   @Mutation(() => LoginResponse)
   login(@Args('LoginInput') data: LoginInput) {
     return this.authService.login(data);
+  }
+
+  @Mutation(() => Boolean)
+  verifyOtp(@Args('VerifyOtpInput') data: VerifyOtpInput) {
+    return this.authService.verifyOtp(data.email, data.otp);
   }
 }

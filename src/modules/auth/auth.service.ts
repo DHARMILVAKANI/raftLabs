@@ -17,12 +17,13 @@ import { compare, createHash } from '../../utils/hash';
 import { createToken } from '../../utils/token.service';
 import { ITokenPayload } from '../../common/interfaces/token.payload.interface';
 import { UserLoginHistory } from '../../database/entities/login.history.entity';
+import { RedisService } from 'src/utils/redis.service';
 
 @Injectable()
 export class AuthService {
   userRepo: Repository<User>;
   userLogin: Repository<UserLoginHistory>;
-  constructor() {
+  constructor(public redisService: RedisService) {
     this.userRepo = connection.getRepository(User);
     this.userLogin = connection.getRepository(UserLoginHistory);
   }
@@ -45,10 +46,11 @@ export class AuthService {
       };
       const { accessToken } = createToken(payload, true);
       await this.userLogin.save({ accessToken, user });
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      await this.redisService.set(`otp:${email}`, otp, 300);
+      // We can implement send email functionality here if we want for OTP, Currently we are sending it in response
 
-      // We can implement send email functionality here if we want
-
-      return { ...user, accessToken };
+      return { ...user, accessToken, otp };
     } catch (error) {
       throw new InternalServerErrorException(
         errorMessages.INTERNAL_SERVER_ERROR,
@@ -63,8 +65,15 @@ export class AuthService {
       relations: ['loginHistory'],
       select: { loginHistory: { id: true, accessToken: true } },
     });
-    if (!user || !compare(password, user.password))
+
+    const attemptsKey = `login_failed_attempts:${email}`;
+    if (!user || !compare(password, user.password)) {
+      const loginAttempts = await this.redisService.increment(attemptsKey, 1);
+      if (loginAttempts >= 5) {
+        throw new BadRequestException('Too many login attempts');
+      }
       throw new BadRequestException(errorMessages.INVALID_INPUT);
+    }
 
     try {
       const payload: ITokenPayload = {
@@ -76,11 +85,21 @@ export class AuthService {
         { id: user.loginHistory.id, user: { id: user.id } },
         { accessToken },
       );
+      await this.redisService.delete(attemptsKey);
       return { accessToken, email, id: user.id };
     } catch (error) {
       throw new InternalServerErrorException(
         errorMessages.INTERNAL_SERVER_ERROR,
       );
     }
+  }
+
+  async verifyOtp(email: string, otp: string) {
+    const storedOtp = await this.redisService.get(`otp:${email}`);
+    if (storedOtp === otp) {
+      await this.redisService.delete(`otp:${email}`);
+      return true;
+    }
+    return false;
   }
 }

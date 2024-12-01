@@ -25,6 +25,7 @@ type SignUpRespone {
   dob: String
   phoneNumber: String
   accessToken: String!
+  otp: String!
 }
 
 type LoginResponse {
@@ -43,6 +44,7 @@ type Query {
 type Mutation {
   signUp(SignUpInput: SignUpInput!): SignUpRespone!
   login(LoginInput: LoginInput!): LoginResponse!
+  verifyOtp(VerifyOtpInput: VerifyOtpInput!): Boolean!
   updateProfile(updateProfileInput: UpdateProfileInput!): User!
   createTask(CreateTaskInput: CreateTaskInput!): Task!
   deleteTask(id: String!): String!
@@ -58,6 +60,11 @@ input SignUpInput {
 input LoginInput {
   email: String!
   password: String!
+}
+
+input VerifyOtpInput {
+  email: String!
+  otp: String!
 }
 
 input UpdateProfileInput {

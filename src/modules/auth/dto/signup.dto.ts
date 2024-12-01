@@ -45,11 +45,21 @@ export class LoginInput {
   @IsNotEmpty()
   password: string;
 }
+@InputType()
+export class VerifyOtpInput extends PickType(LoginInput, ['email']) {
+  @Field(() => String)
+  @IsString()
+  @IsNotEmpty()
+  otp: string;
+}
 
 @ObjectType()
 export class SignUpRespone extends User {
   @Field()
   accessToken: string;
+
+  @Field()
+  otp: string;
 }
 
 @ObjectType()

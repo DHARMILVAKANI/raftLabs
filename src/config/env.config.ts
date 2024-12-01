@@ -16,5 +16,8 @@ export const envConfig = {
       password: process.env.DB_PASSWORD,
       name: process.env.DB_NAME,
     },
+    redis: {
+      port: process.env.REDIS_PORT,
+    },
   },
 };
