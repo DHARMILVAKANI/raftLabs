@@ -2,6 +2,15 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type User {
+  id: ID!
+  firstName: String!
+  lastName: String!
+  email: String!
+  dob: String
+  phoneNumber: String
+}
+
 type SignUpRespone {
   id: ID!
   firstName: String!
@@ -20,11 +29,13 @@ type LoginResponse {
 
 type Query {
   getHello: String!
+  getProfileData: User!
 }
 
 type Mutation {
   signUp(SignUpInput: SignUpInput!): SignUpRespone!
   login(LoginInput: LoginInput!): LoginResponse!
+  updateProfile(updateProfileInput: UpdateProfileInput!): User!
 }
 
 input SignUpInput {
@@ -37,4 +48,11 @@ input SignUpInput {
 input LoginInput {
   email: String!
   password: String!
+}
+
+input UpdateProfileInput {
+  firstName: String
+  lastName: String
+  dob: String
+  phoneNumber: String
 }

@@ -1,10 +1,11 @@
 import { Column, Entity, OneToMany, OneToOne } from 'typeorm';
 import { BaseEntity } from './base.entity';
-import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { Field, ID, ObjectType, DateScalarMode } from '@nestjs/graphql';
 import { UserLoginHistory } from './login.history.entity';
+import { Task } from 'src/database/entities/task.entity';
 
-@Entity('User')
 @ObjectType()
+@Entity('User')
 export class User extends BaseEntity {
   @Field(() => ID)
   id: string;
@@ -34,4 +35,7 @@ export class User extends BaseEntity {
 
   @OneToOne(() => UserLoginHistory, (u) => u.user)
   loginHistory: UserLoginHistory;
+
+  @OneToMany(() => Task, (tk) => tk.user)
+  tasks: Task[];
 }

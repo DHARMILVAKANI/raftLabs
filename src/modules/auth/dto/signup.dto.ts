@@ -6,18 +6,28 @@ import {
   PickType,
 } from '@nestjs/graphql';
 import { User } from '../../../database/entities/user.entity';
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
 @InputType()
 export class SignUpInput {
   @Field(() => String)
+  @IsString()
+  @IsNotEmpty()
   firstName: string;
 
+  @IsString()
+  @IsNotEmpty()
   @Field(() => String)
   lastName: string;
 
+  @IsString()
+  @IsNotEmpty()
+  @IsEmail()
   @Field(() => String)
   email: string;
 
+  @IsString()
+  @IsNotEmpty()
   @Field(() => String)
   password: string;
 }
@@ -25,9 +35,14 @@ export class SignUpInput {
 @InputType()
 export class LoginInput {
   @Field(() => String)
+  @IsString()
+  @IsNotEmpty()
+  @IsEmail()
   email: string;
 
   @Field(() => String)
+  @IsString()
+  @IsNotEmpty()
   password: string;
 }
 
