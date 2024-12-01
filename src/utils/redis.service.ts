@@ -47,9 +47,11 @@ export class RedisService {
     }
   }
 
-  async increment(key: string, increment: number) {
+  async increment(key: string, increment: number, ttl?: number) {
     try {
-      return await this.client.incrby(key, increment);
+      const counter = await this.client.incrby(key, increment);
+      await this.client.expire(key, ttl);
+      return counter;
     } catch (error) {
       console.error('Error incrementing value in Redis:', error);
       return 0;

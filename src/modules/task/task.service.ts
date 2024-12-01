@@ -26,10 +26,11 @@ export class TaskService {
   }
 
   async getTasks(userId: string) {
-    const cachedTasks = await this.redisService.get(`tasks:${userId}`);
+    const tasksFromCache = await this.redisService.get(`tasks:${userId}`);
 
-    if (cachedTasks) {
-      return cachedTasks;
+    if (tasksFromCache) {
+      console.log('Recieved from cache', tasksFromCache);
+      return tasksFromCache;
     }
     const tasks = await this.taskRepo.find({ where: { user: { id: userId } } });
     if (!tasks) return [];
@@ -40,10 +41,13 @@ export class TaskService {
   }
 
   async getSingleTasks(taskId: string, userId: string) {
-    const cachedTask = await this.redisService.get(`task:${userId}:${taskId}`);
+    const taskFromCache = await this.redisService.get(
+      `task:${userId}:${taskId}`,
+    );
 
-    if (cachedTask) {
-      return cachedTask;
+    if (taskFromCache) {
+      console.log('Recieved from cache', taskFromCache);
+      return taskFromCache;
     }
     const task = await this.taskRepo.findOne({
       where: { id: taskId, user: { id: userId } },

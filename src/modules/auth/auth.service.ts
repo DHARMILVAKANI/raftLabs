@@ -68,7 +68,11 @@ export class AuthService {
 
     const attemptsKey = `login_failed_attempts:${email}`;
     if (!user || !compare(password, user.password)) {
-      const loginAttempts = await this.redisService.increment(attemptsKey, 1);
+      const loginAttempts = await this.redisService.increment(
+        attemptsKey,
+        1,
+        300,
+      );
       if (loginAttempts >= 5) {
         throw new BadRequestException('Too many login attempts');
       }
