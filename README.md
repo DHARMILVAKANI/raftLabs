@@ -66,4 +66,10 @@ To test your GraphQL queries, open the GraphQL playground by navigating to:
 http://localhost:9000/graphql
 ```
 
+### Step 7: Access the Redis Dashboard
+
+```
+http://localhost:8081
+```
+
 Thank You !
