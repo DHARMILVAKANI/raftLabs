@@ -2,9 +2,6 @@ import * as winston from 'winston';
 import * as dailyRotateFile from 'winston-daily-rotate-file';
 const { combine, timestamp, json } = winston.format;
 
-/**
- * It creates a logger used for information & error tracking
- */
 export const logger = winston.createLogger({
   level: 'info',
   format: combine(timestamp(), json()),
@@ -13,7 +10,7 @@ export const logger = winston.createLogger({
     new winston.transports.Console(),
     new dailyRotateFile({ filename: 'app-name', level: 'info' }),
   ],
-  // to log unhandled errors
+
   exceptionHandlers: [
     new winston.transports.Console(),
     new dailyRotateFile({

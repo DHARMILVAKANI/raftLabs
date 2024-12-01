@@ -11,8 +11,7 @@ import { connection } from 'src/database/database.module';
 import { User } from 'src/database/entities/user.entity';
 import { IS_PUBLIC } from 'src/decorators/public.decorator';
 import { verifyToken } from 'src/utils/token.service';
-import { GqlExecutionContext } from '@nestjs/graphql'; // Import for GraphQL
-
+import { GqlExecutionContext } from '@nestjs/graphql';
 @Injectable()
 export class AuthGuard implements CanActivate {
   userRepo = connection.manager.getRepository(User);
@@ -20,8 +19,8 @@ export class AuthGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   async canActivate(context: ExecutionContext) {
-    const gqlContext = GqlExecutionContext.create(context); // Create the GraphQL context
-    const request = gqlContext.getContext().req; // Get the request object from the GraphQL context
+    const gqlContext = GqlExecutionContext.create(context);
+    const request = gqlContext.getContext().req;
 
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC, [
       context.getHandler(),

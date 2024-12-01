@@ -26,7 +26,6 @@ export class ValidationPipe implements PipeTransform<any> {
 
     if (errors.length > 0) {
       let constraints = errors[0].constraints;
-      // checks if error occured in sub dto
       if (!constraints) {
         constraints = errors[0].children[0].constraints;
         errors = errors[0].children;
