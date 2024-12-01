@@ -9,6 +9,8 @@ import { join } from 'path';
 import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from 'src/modules/user/user.module';
 import { TaskModule } from 'src/modules/task/task.module';
+import { EventsGateway } from 'src/utils/event.gateway';
+import { EventsService } from 'src/utils/event.service';
 
 @Module({
   imports: [
@@ -28,6 +30,8 @@ import { TaskModule } from 'src/modules/task/task.module';
       provide: APP_GUARD,
       useClass: AuthGuard,
     },
+    EventsGateway,
+    EventsService,
   ],
 })
 export class AppModule {}
