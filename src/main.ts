@@ -11,9 +11,13 @@ async function bootstrap() {
   const appPort = envConfig.app.port;
 
   app.use(helmet.frameguard());
-  app.setGlobalPrefix('/api');
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new GqlExceptionFilter());
+  app.enableCors({
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  });
 
   await app.listen(appPort);
   logger.log(`🚀 Application running on port ${appPort}`);

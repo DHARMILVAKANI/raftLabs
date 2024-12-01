@@ -33,7 +33,6 @@ export class EventsGateway
 
   @SubscribeMessage('message')
   handleMessage(@MessageBody() data: string): string {
-    console.log(data);
     return this.eventsService.handleMessage(data);
   }
 }
