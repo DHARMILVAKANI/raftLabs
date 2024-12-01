@@ -11,9 +11,6 @@ export class RedisService {
       host: process.env.REDIS_HOST || 'localhost',
       port: parseInt(envConfig.app.redis.port, 10) || 6379,
     });
-
-    this.client.on('connect', () => console.log('Redis connected.'));
-    this.client.on('error', (err) => console.error('Redis error:', err));
   }
 
   async set(key: string, value: any, ttl?: number): Promise<void> {
