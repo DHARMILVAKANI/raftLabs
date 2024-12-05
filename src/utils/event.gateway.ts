@@ -1,3 +1,4 @@
+import { UseGuards } from '@nestjs/common';
 import {
   WebSocketGateway,
   SubscribeMessage,
@@ -5,15 +6,18 @@ import {
   OnGatewayInit,
   OnGatewayConnection,
   OnGatewayDisconnect,
+  ConnectedSocket,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { AuthGuard } from 'src/guards/auth.guard';
 import { EventsService } from 'src/utils/event.service';
 
-@WebSocketGateway(3001, {
+@WebSocketGateway({
   cors: {
     origin: '*',
   },
 })
+@UseGuards(AuthGuard)
 export class EventsGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
@@ -32,7 +36,7 @@ export class EventsGateway
   }
 
   @SubscribeMessage('message')
-  handleMessage(@MessageBody() data: string): string {
-    return this.eventsService.handleMessage(data);
+  handleMessage(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
+    return this.eventsService.handleMessage(data, client);
   }
 }

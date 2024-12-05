@@ -1,27 +1,23 @@
-import { Injectable } from '@nestjs/common';
 import {
+  Injectable,
   CanActivate,
   ExecutionContext,
-  ForbiddenException,
   UnauthorizedException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { errorMessages } from 'src/common/error.messages';
-import { connection } from 'src/database/database.module';
-import { User } from 'src/database/entities/user.entity';
+import { GqlExecutionContext } from '@nestjs/graphql';
 import { IS_PUBLIC } from 'src/decorators/public.decorator';
 import { verifyToken } from 'src/utils/token.service';
-import { GqlExecutionContext } from '@nestjs/graphql';
+import { connection } from 'src/database/database.module';
+import { User } from 'src/database/entities/user.entity';
 @Injectable()
 export class AuthGuard implements CanActivate {
-  userRepo = connection.manager.getRepository(User);
+  private userRepo = connection.manager.getRepository(User);
 
   constructor(private reflector: Reflector) {}
 
-  async canActivate(context: ExecutionContext) {
-    const gqlContext = GqlExecutionContext.create(context);
-    const request = gqlContext.getContext().req;
-
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC, [
       context.getHandler(),
       context.getClass(),
@@ -30,15 +26,36 @@ export class AuthGuard implements CanActivate {
     if (isPublic) {
       return true;
     }
-
-    const Authorization = request.headers['authorization'];
-    if (!Authorization) {
-      throw new UnauthorizedException(errorMessages.INVALID_TOKEN);
+    if (context.getType() === 'ws') {
+      return this.handleWebSocket(context);
     }
 
-    const token = Authorization.replace('Bearer ', '');
+    if (GqlExecutionContext.create(context)) {
+      return this.handleGraphQL(context);
+    }
+
+    return false;
+  }
+
+  private async handleGraphQL(context: ExecutionContext) {
+    const gqlContext = GqlExecutionContext.create(context);
+    const request = gqlContext.getContext().req;
+    const token = request.headers['authorization'].replace('Bearer ', '');
+    return this.validateToken(token, request);
+  }
+
+  private async handleWebSocket(context: ExecutionContext) {
+    const client = context.switchToWs().getClient();
+    const token = client.handshake?.headers?.authorization?.replace(
+      'Bearer ',
+      '',
+    );
+    return this.validateToken(token, client);
+  }
+
+  private async validateToken(token: string, requestOrClient: any) {
     if (!token || !token.trim()) {
-      throw new UnauthorizedException(errorMessages.INVALID_TOKEN);
+      throw new UnauthorizedException('Invalid token');
     }
 
     const tokenData = await verifyToken(token);
@@ -47,7 +64,7 @@ export class AuthGuard implements CanActivate {
     }
 
     if (!tokenData.data || !tokenData.data.userId) {
-      throw new UnauthorizedException(errorMessages.INVALID_TOKEN);
+      throw new UnauthorizedException('Invalid token');
     }
 
     const user = await this.userRepo.findOne({
@@ -58,11 +75,11 @@ export class AuthGuard implements CanActivate {
       relations: ['loginHistory'],
     });
     if (!user) {
-      throw new ForbiddenException();
+      throw new ForbiddenException('Access denied');
     }
 
-    request.userId = tokenData.data.userId;
-    request.email = user.email;
+    requestOrClient.userId = tokenData.data.userId;
+    requestOrClient.email = user.email;
 
     return true;
   }
